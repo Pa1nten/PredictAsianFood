@@ -185,4 +185,4 @@ def index():
     return render_template('index.html')
 
 if __name__ == '__main__':
-    app.run(debug=False,host ='db-learning.ithub.ru',port ='8236')
+    app.run(debug=False,host ='db-learning.ithub.ru',port ='1103')
