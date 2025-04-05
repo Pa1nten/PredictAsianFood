@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Определение блюда</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        h1 {
+            text-align: center;
+        }
+        form {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        input[type="file"] {
+            margin-right: 10px;
+        }
+        button {
+            padding: 10px 15px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .result {
+            text-align: center;
+            margin-top: 30px;
+        }
+        .result img {
+            margin-top: 20px;
+        }
+        .recipe {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Загрузите изображение японского блюда</h1>
+    <form method="POST" enctype="multipart/form-data">
+        <input type="file" name="image" accept="image/*" required>
+        <button type="submit">Отправить</button>
+    </form>
+
+    {% if label %}
+        <div class="result">
+            <h2>Предсказание: {{ label }}</h2>
+            <img src="{{ url_for('static', filename='uploads/' + image) }}" width="300" alt="Загруженное изображение">
+            <div class="recipe">
+                <h3>Рецепт:</h3>
+                <p><strong>Ингредиенты:</strong></p>
+                <ul>
+                    {% for ingredient in recipe.ingredients %}
+                        <li>{{ ingredient }}</li>
+                    {% endfor %}
+                </ul>
+                <p><strong>Шаги приготовления:</strong></p>
+                <ol>
+                    {% for step in recipe.steps %}
+                        <li>{{ step }}</li>
+                    {% endfor %}
+                </ol>
+                <p><strong>Источник:</strong> <a href="{{ recipe.source }}" target="_blank">{{ recipe.source }}</a></p>
+            </div>
+        </div>
+    {% endif %}
+</body>
+</html>

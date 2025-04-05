@@ -7,7 +7,7 @@ import os
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'static/uploads'
 
-model = load_model("full_model.keras")
+model = load_model("full_model.h5")
 
 index_to_label = {
     0: 'Moti',
