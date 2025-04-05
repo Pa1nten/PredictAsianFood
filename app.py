@@ -1,6 +1,7 @@
 from flask import Flask, request, render_template
 from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing import image
+from PIL import Image
 import numpy as np
 import os
 
@@ -150,6 +151,28 @@ recipes = {
     }
 }
 
+def smart_resize(img, target):
+    base_width = img.width
+    base_height = img.height
+    target_width = target[0]
+    target_height = target[1]
+
+    width_first_way = round(target_height / base_height * base_width)
+
+    if width_first_way < target_width:
+        height_first_way = round(target_width / base_width * base_height)
+        img = img.resize((target_width, height_first_way))
+    else:
+        img = img.resize((width_first_way, target_height))
+
+    left = (img.width - target_width) // 2
+    top = (img.height - target_height) // 2
+    right = left + target_width
+    bottom = top + target_height
+    img = img.crop((left, top, right, bottom))
+
+    return img
+
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
@@ -157,13 +180,13 @@ def index():
         if file:
             filepath = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
             file.save(filepath)
-
-            img = image.load_img(filepath, target_size=(160, 160))
-            img_array = image.img_to_array(img)
-            img_array = np.expand_dims(img_array, axis=0)
-            img_array = img_array / 255.0
-
             try:
+                img = Image.open(filepath).convert("RGB")
+                img = smart_resize(img, (160, 160))
+                img_array = image.img_to_array(img)
+                img_array = np.expand_dims(img_array, axis=0)
+                img_array = img_array / 255.0
+
                 prediction = model.predict(img_array)
                 max_confidence = np.max(prediction)
                 class_index = np.argmax(prediction)
